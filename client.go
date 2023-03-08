@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/ayush6624/go-chatgpt/utils"
 )
 
 const (
@@ -33,7 +35,7 @@ type Config struct {
 
 func NewClient(apikey string) (*Client, error) {
 	if apikey == "" {
-		return nil, fmt.Errorf("API Key is required")
+		return nil, chatgpt_errors.ErrAPIKeyRequired
 	}
 
 	return &Client{
@@ -47,7 +49,7 @@ func NewClient(apikey string) (*Client, error) {
 
 func NewClientWithConfig(config *Config) (*Client, error) {
 	if config.APIKey == "" {
-		return nil, fmt.Errorf("API Key is required")
+		return nil, chatgpt_errors.ErrAPIKeyRequired
 	}
 
 	return &Client{
