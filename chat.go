@@ -48,17 +48,17 @@ type ChatCompletionRequest struct {
 	N int `json:"n,omitempty"`
 
 	// (Optional - default: infinite)
-	// The maximum number of tokens allowed for the generated answer. By default, 
+	// The maximum number of tokens allowed for the generated answer. By default,
 	// the number of tokens the model can return will be (4096 - prompt tokens).
 	MaxTokens int `json:"max_tokens,omitempty"`
 
 	// (Optional - default: 0)
-	// Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, 
+	// Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far,
 	// increasing the model's likelihood to talk about new topics.
 	PresencePenalty float64 `json:"presence_penalty,omitempty"`
 
 	// (Optional - default: 0)
-	// Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, 
+	// Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far,
 	// decreasing the model's likelihood to repeat the same line verbatim.
 	FrequencyPenalty float64 `json:"frequency_penalty,omitempty"`
 
