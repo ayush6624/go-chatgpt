@@ -2,10 +2,10 @@ package chatgpt_test
 
 import (
 	"testing"
-	
-	"github.com/stretchr/testify/assert"
+
 	"github.com/ayush6624/go-chatgpt"
 	"github.com/ayush6624/go-chatgpt/utils"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewClient(t *testing.T) {
@@ -18,8 +18,7 @@ func TestNewClient(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Equal(t, err, chatgpt_errors.ErrAPIKeyRequired)
 
-	_, err = chatgpt.NewClientWithConfig(&chatgpt.Config{
-	})
+	_, err = chatgpt.NewClientWithConfig(&chatgpt.Config{})
 	assert.NotNil(t, err)
 	assert.Equal(t, err, chatgpt_errors.ErrAPIKeyRequired)
 

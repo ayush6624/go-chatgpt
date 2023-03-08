@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/ayush6624/go-chatgpt/utils"
@@ -58,7 +57,7 @@ func NewClientWithConfig(config *Config) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) sendRequest(ctx context.Context, req *http.Request) (error) {
+func (c *Client) sendRequest(ctx context.Context, req *http.Request) (*http.Response, error) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.config.APIKey))
 	if c.config.OrganizationID != "" {
 		req.Header.Set("OpenAI-Organization", c.config.OrganizationID)
@@ -68,19 +67,17 @@ func (c *Client) sendRequest(ctx context.Context, req *http.Request) (error) {
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer res.Body.Close()
-
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("api request failed: status Code: %d %s %s", res.StatusCode, res.Status, res.Request.URL)
+		// Parse body
+		var errMessage interface{}
+		if err := json.NewDecoder(res.Body).Decode(&errMessage); err != nil {
+			return nil, err
+		}
+
+		return nil, fmt.Errorf("api request failed: status Code: %d %s %s Message: %+v", res.StatusCode, res.Status, res.Request.URL, errMessage)
 	}
 
-	var v interface{}
-	if err := json.NewDecoder(res.Body).Decode(&v); err != nil {
-		return err
-	}
-
-	log.Printf("%+v", v)
-	return nil
+	return res, nil
 }
