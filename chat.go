@@ -68,8 +68,8 @@ type ChatCompletionRequest struct {
 }
 
 type ChatMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Role    ChatGPTModelRole `json:"role"`
+	Content string           `json:"content"`
 }
 
 type ChatResponse struct {
@@ -97,7 +97,7 @@ func (c *Client) SimpleSend(ctx context.Context, message string) (*ChatResponse,
 		Model: GPT35Turbo,
 		Messages: []ChatMessage{
 			{
-				Role:    string(ChatGPTModelRoleUser),
+				Role:    ChatGPTModelRoleUser,
 				Content: message,
 			},
 		},
@@ -147,7 +147,7 @@ func validate(req *ChatCompletionRequest) error {
 	}
 
 	for _, message := range req.Messages {
-		if message.Role != string(ChatGPTModelRoleUser) && message.Role != string(ChatGPTModelRoleSystem) && message.Role != string(ChatGPTModelRoleAssistant) {
+		if message.Role != ChatGPTModelRoleUser && message.Role != ChatGPTModelRoleSystem && message.Role != ChatGPTModelRoleAssistant {
 			return chatgpt_errors.ErrInvalidRole
 		}
 	}

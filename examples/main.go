@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	key := os.Getenv("OPENAPI_KEY")
+	key := os.Getenv("OPENAI_KEY")
 	c, err := chatgpt.NewClient(key)
 	if err != nil {
 		log.Fatal(err)
@@ -23,5 +23,21 @@ func main() {
 	}
 
 	a, _ := json.MarshalIndent(res, "", "  ");
+	log.Println(string(a))
+
+	res, err = c.Send(ctx, &chatgpt.ChatCompletionRequest{
+		Model: chatgpt.GPT35Turbo,
+		Messages: []chatgpt.ChatMessage{
+			{
+				Role: chatgpt.ChatGPTModelRoleSystem,
+				Content: "Hey, Explain GoLang to me in 2 sentences.",
+			},
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	a, _ = json.MarshalIndent(res, "", "  ");
 	log.Println(string(a))
 }
