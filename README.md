@@ -4,9 +4,10 @@ Go-ChatGPT is an open-source GoLang client for ChatGPT, a large language model t
 
 ## Features
 
-- Easy-to-use GoLang client for ChatGPT
-- Sends text to ChatGPT and receives a response
-- Supports both the completion and the classification endpoints
+- [x] Easy-to-use GoLang client for ChatGPT
+- [x] Sends text to ChatGPT and receives a response
+- [x] Support custom model and parameters
+
 
 ## Installation
 
@@ -67,6 +68,13 @@ ___
 		// handle error
 	}
    ```
+## Contribute
+If you want to contribute to this project, feel free to open a PR or an issue.
+
+
+## License
+This package is licensed under MIT license. See [LICENSE](./LICENSE) for details.
+
 
 ___
 [![codecov](https://codecov.io/gh/ayush6624/go-chatgpt/branch/main/graph/badge.svg?token=2VXFP3238M)](https://codecov.io/gh/ayush6624/go-chatgpt)
