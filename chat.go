@@ -138,12 +138,12 @@ func (c *Client) Send(ctx context.Context, req *ChatCompletionRequest) (*ChatRes
 }
 
 func validate(req *ChatCompletionRequest) error {
-	if req.Model != GPT35Turbo && req.Model != GPT35Turbo0301 {
-		return chatgpt_errors.ErrInvalidModel
-	}
-
 	if len(req.Messages) == 0 {
 		return chatgpt_errors.ErrNoMessages
+	}
+
+	if req.Model != GPT35Turbo && req.Model != GPT35Turbo0301 {
+		return chatgpt_errors.ErrInvalidModel
 	}
 
 	for _, message := range req.Messages {
