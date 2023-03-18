@@ -1,10 +1,13 @@
 package chatgpt
 
 import (
+	"context"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	chatgpt_errors "github.com/ayush6624/go-chatgpt/utils"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidate(t *testing.T) {
@@ -56,9 +59,9 @@ func TestValidate(t *testing.T) {
 		{
 			name: "Invalid presence penalty",
 			request: &ChatCompletionRequest{
-				Model:            GPT35Turbo,
-				Messages:         validRequest().Messages,
-				PresencePenalty:  -3,
+				Model:           GPT35Turbo,
+				Messages:        validRequest().Messages,
+				PresencePenalty: -3,
 			},
 			expectedError: chatgpt_errors.ErrInvalidPresencePenalty,
 		},
@@ -91,4 +94,122 @@ func validRequest() *ChatCompletionRequest {
 			},
 		},
 	}
+}
+
+func newTestServerAndClient() (*httptest.Server, *Client) {
+	// Create a new test HTTP server to handle requests
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{ "id": "chatcmpl-abcd", "object": "chat.completion", "created_at": 0, "choices": [ { "index": 0, "message": { "role": "assistant", "content": "\n\n Sample response" }, "finish_reason": "stop" } ], "usage": { "prompt_tokens": 19, "completion_tokens": 47, "total_tokens": 66 }}`))
+	}))
+
+	// Create a new client with the test server's URL and a mock API key
+	return testServer, &Client{
+		client: http.DefaultClient,
+		config: &Config{
+			BaseURL:        testServer.URL,
+			APIKey:         "mock_api_key",
+			OrganizationID: "mock_organization_id",
+		},
+	}
+}
+
+func newTestClientWithInvalidResponse() (*httptest.Server, *Client) {
+	// Create a new test HTTP server to handle requests
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{ fakejson }`))
+	}))
+
+	// Create a new client with the test server's URL and a mock API key
+	return testServer, &Client{
+		client: http.DefaultClient,
+		config: &Config{
+			BaseURL:        testServer.URL,
+			APIKey:         "mock_api_key",
+			OrganizationID: "mock_organization_id",
+		},
+	}
+}
+
+func newTestClientWithInvalidStatusCode() (*httptest.Server, *Client) {
+	// Create a new test HTTP server to handle requests
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{ "error": "bad request" }`))
+	}))
+
+	// Create a new client with the test server's URL and a mock API key
+	return testServer, &Client{
+		client: http.DefaultClient,
+		config: &Config{
+			BaseURL:        testServer.URL,
+			APIKey:         "mock_api_key",
+			OrganizationID: "mock_organization_id",
+		},
+	}
+}
+
+func TestSend(t *testing.T) {
+	server, client := newTestServerAndClient()
+	defer server.Close()
+
+	_, err := client.Send(context.Background(), &ChatCompletionRequest{
+		Model: GPT35Turbo,
+		Messages: []ChatMessage{
+			{
+				Role:    ChatGPTModelRoleUser,
+				Content: "Hello",
+			},
+		},
+	})
+	assert.NoError(t, err)
+
+	_, err = client.Send(context.Background(), &ChatCompletionRequest{
+		Model: "invalid model",
+		Messages: []ChatMessage{
+			{
+				Role:    ChatGPTModelRoleUser,
+				Content: "Hello",
+			},
+		},
+	})
+	assert.Error(t, err)
+
+	server, client = newTestClientWithInvalidResponse()
+	defer server.Close()
+
+	_, err = client.Send(context.Background(), &ChatCompletionRequest{
+		Model: GPT35Turbo,
+		Messages: []ChatMessage{
+			{
+				Role:    ChatGPTModelRoleUser,
+				Content: "Hello",
+			},
+		},
+	})
+	assert.Error(t, err)
+
+	server, client = newTestClientWithInvalidStatusCode()
+	defer server.Close()
+
+	_, err = client.Send(context.Background(), &ChatCompletionRequest{
+		Model: GPT35Turbo,
+		Messages: []ChatMessage{
+			{
+				Role:    ChatGPTModelRoleUser,
+				Content: "Hello",
+			},
+		},
+	})
+	assert.Error(t, err)
+
+}
+
+func TestSimpleSend(t *testing.T) {
+	server, client := newTestServerAndClient()
+	defer server.Close()
+
+	_, err := client.SimpleSend(context.Background(), "Hello")
+	assert.NoError(t, err)
 }

@@ -111,10 +111,7 @@ func (c *Client) Send(ctx context.Context, req *ChatCompletionRequest) (*ChatRes
 		return nil, err
 	}
 
-	reqBytes, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
+	reqBytes, _ := json.Marshal(req)
 
 	endpoint := "/chat/completions"
 	httpReq, err := http.NewRequest("POST", c.config.BaseURL+endpoint, bytes.NewBuffer(reqBytes))

@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
-	"github.com/ayush6624/go-chatgpt/utils"
+	chatgpt_errors "github.com/ayush6624/go-chatgpt/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,30 +31,17 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestClient2_sendRequest(t *testing.T) {
-	// Create a new test HTTP server to handle requests
-	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
-	defer testServer.Close()
-
-	// Create a new client with the test server's URL and a mock API key
-	client := &Client{
-		client: http.DefaultClient,
-		config: &Config{
-			BaseURL: testServer.URL,
-			APIKey:  "mock_api_key",
-			OrganizationID: "mock_organization_id",
-		},
-	}
+	// Create a new test HTTP server and client to handle requests
+	testServer, client := newTestServerAndClient()
 
 	// Create a new request
-	req, err := http.NewRequest("GET", testServer.URL, nil)
+	req, err := http.NewRequest("POST", testServer.URL, nil)
 	assert.NoError(t, err)
 
 	// Send the request using the ChatGPT client
-	resp, err := client.sendRequest(context.Background(), req)
+	res, err := client.sendRequest(context.Background(), req)
 	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
 
 	expectedHeader := map[string]string{
 		"Authorization":       fmt.Sprintf("Bearer %s", "mock_api_key"),
@@ -64,29 +50,17 @@ func TestClient2_sendRequest(t *testing.T) {
 		"Accept":              "application/json",
 	}
 
-	// Check that the request's header is set correctly
+	// Check that the request's header is set correctly, after sendRequest was called
 	for key, value := range expectedHeader {
 		assert.Equal(t, req.Header.Get(key), value)
 	}
 
-	tServer2 := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"result": "failure"}`))
-	}))
-	defer tServer2.Close()
-
-	client, err = NewClientWithConfig(&Config{
-		BaseURL: tServer2.URL,
-		APIKey:  "mock_api_key",
-		OrganizationID: "mock_organization_id",
-	})
-	assert.NoError(t, err)
-
+	testServer, client = newTestClientWithInvalidStatusCode()
 	// Prepare a test request
-	req, err = http.NewRequest("GET", tServer2.URL, nil)
+	req, err = http.NewRequest("GET", testServer.URL, nil)
 	assert.NoError(t, err)
 
-	// Send the request using the ChatGPT client
-	resp, err = client.sendRequest(context.Background(), req)
+	resp, err := client.sendRequest(context.Background(), req)
 	assert.Error(t, err)
+	assert.Nil(t, resp)
 }
