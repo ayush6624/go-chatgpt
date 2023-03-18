@@ -28,7 +28,7 @@ ___
 1. In your Go code, import the ChatGPT-Go package:
     ```go
     import (
-        "github.com/<username>/chatgpt-go/chatgpt"
+        "github.com/ayush6624/chatgpt-go/chatgpt"
     )
     ```
 
