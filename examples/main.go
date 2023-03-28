@@ -26,7 +26,7 @@ func main() {
 	log.Println(string(a))
 
 	res, err = c.Send(ctx, &chatgpt.ChatCompletionRequest{
-		Model: chatgpt.GPT35Turbo,
+		Model: chatgpt.GPT4,
 		Messages: []chatgpt.ChatMessage{
 			{
 				Role: chatgpt.ChatGPTModelRoleSystem,

@@ -7,6 +7,7 @@ Go-ChatGPT is an open-source GoLang client for ChatGPT, a large language model t
 - [x] Easy-to-use GoLang client for ChatGPT
 - [x] Sends text to ChatGPT and receives a response
 - [x] Support custom model and parameters
+- [x] Supports GPT3.5 and GPT4 models 
 
 
 ## Installation
