@@ -7,7 +7,7 @@ Go-ChatGPT is an open-source GoLang client for ChatGPT, a large language model t
 - [x] Easy-to-use GoLang client for ChatGPT
 - [x] Sends text to ChatGPT and receives a response
 - [x] Support custom model and parameters
-- [x] Supports GPT3.5 and GPT4 models 
+- [x] Supports GPT3.5 and GPT4 models
 
 
 ## Installation
@@ -29,7 +29,7 @@ ___
 1. In your Go code, import the ChatGPT-Go package:
     ```go
     import (
-        "github.com/ayush6624/chatgpt-go/chatgpt"
+        "github.com/ayush6624/go-chatgpt"
     )
     ```
 
@@ -45,7 +45,7 @@ ___
 3. Use the `SimpleSend` API to send text to ChatGPT and get a response.
    ```go
     ctx := context.Background()
-	
+
     res, err := c.SimpleSend(ctx, "Hello, how are you?")
 	if err != nil {
 		// handle error
@@ -55,7 +55,7 @@ ___
 4. To use a custom model/parameters, use the `Send` API.
    ```go
     ctx := context.Background()
-    
+
     res, err = c.Send(ctx, &chatgpt.ChatCompletionRequest{
 		Model: chatgpt.GPT35Turbo,
 		Messages: []chatgpt.ChatMessage{
