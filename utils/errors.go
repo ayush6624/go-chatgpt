@@ -7,7 +7,7 @@ var (
 	ErrAPIKeyRequired = errors.New("API Key is required")
 
 	// ErrInvalidModel is returned when the model is invalid
-	ErrInvalidModel = errors.New("invalid model. Only `gpt-3.5-turbo` and `gpt-3.5-turbo-0301` are supported")
+	ErrInvalidModel = errors.New("invalid model")
 
 	// ErrNoMessages is returned when no messages are provided
 	ErrNoMessages = errors.New("no messages provided")
